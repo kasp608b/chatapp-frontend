@@ -1,27 +1,27 @@
 <h1>Chat</h1>
-<div *ngIf="name">
-  <h1>Hi {{name}}</h1>
+<div *ngIf="nickname">
+  <h1>Hi {{nickname}}</h1>
   <label>
     Message:
-    <input type="text" [formControl]="message">
+    <input type="text" [formControl]="messageFC">
   </label>
 
   <button (click)="sendMessage()">Send Message</button>
 </div>
-<div *ngIf="!name">
+<div *ngIf="!nickname">
   <label>
     Name:
-    <input type="text" [formControl]="nameFC">
+    <input type="text" [formControl]="nicknameFC">
   </label>
 
-  <button (click)="sendName()">Send Name</button>
+  <button (click)="sendNickname()">Send Nickname</button>
 </div>
 
 <h3>Messages</h3>
 <h4 *ngFor="let message of messages">
-  {{message}}
+  {{message.sender.nickName}} ---- {{message.message}}
 </h4>
 <h3>Clients</h3>
 <h4 *ngFor="let client of clients">
-  {{client}}
+  {{client.nickName}}
 </h4>

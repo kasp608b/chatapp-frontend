@@ -2,6 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ChatService } from './shared/chat.service';
 import { Subscription } from 'rxjs';
+import { ChatClient } from './shared/chat-client.model';
+import {ChatMessage} from './shared/chat-message.model';
 
 @Component({
   selector: 'app-chat',
@@ -9,13 +11,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  message = new FormControl('');
-  nameFC = new FormControl('');
-  messages: string[] = [];
-  clients: string[] = [];
+  messageFC = new FormControl('');
+  nicknameFC = new FormControl('');
+  messages: ChatMessage[] = [];
+  clients: ChatClient[] = [];
   private sub: Subscription | undefined;
   private sub2: Subscription | undefined;
-  name: string | undefined;
+  nickname: string | undefined;
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
@@ -31,8 +33,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessage(): void {
-    console.log(this.message.value);
-    this.chatService.sendMessage(this.message.value);
+    console.log(this.messageFC.value);
+    this.chatService.sendMessage(this.messageFC.value);
   }
 
   ngOnDestroy(): void {
@@ -45,11 +47,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendName(): void {
+  sendNickname(): void {
     // Remember to validate name
-    this.name = this.nameFC.value;
-    if (this.name){
-      this.chatService.sendName(this.name);
+    this.nickname = this.nicknameFC.value;
+    if (this.nickname){
+      this.chatService.sendNickname(this.nickname);
     }
   }
 }
