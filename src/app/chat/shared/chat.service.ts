@@ -20,12 +20,25 @@ export class ChatService {
       .fromEvent<ChatMessage>('newMessage');
   }
 
+  getAllMessages(): Observable<ChatMessage[]>{
+    return this.socket
+      .fromEvent<ChatMessage[]>('allMessages');
+  }
+
   listenForClients(): Observable<ChatClient[]>{
     return this.socket
-      .fromEvent<any>('clients');
+      .fromEvent<ChatClient[]>('clients');
   }
 
   sendNickname(nickname: string): void {
     this.socket.emit('nickname', nickname);
+  }
+
+  disconnect(): void {
+    this.socket.disconnect();
+  }
+
+  connect(): void {
+    this.socket.connect();
   }
 }

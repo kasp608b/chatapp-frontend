@@ -21,7 +21,12 @@
 <h4 *ngFor="let message of messages">
   {{message.sender.nickName}} ---- {{message.message}}
 </h4>
-<h3>Clients</h3>
-<h4 *ngFor="let client of clients">
-  {{client.nickName}}
-</h4>
+
+<div *ngIf="clients$ | async as clients">
+  <h3>Users</h3>
+<ul>
+  <li *ngFor="let client of clients">
+    {{client.nickName}}
+  </li>
+</ul>
+</div>

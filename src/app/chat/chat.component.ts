@@ -1,9 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ChatService } from './shared/chat.service';
-import { Subscription } from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import { ChatClient } from './shared/chat-client.model';
 import {ChatMessage} from './shared/chat-message.model';
+import {take, takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-chat',
@@ -14,22 +15,31 @@ export class ChatComponent implements OnInit, OnDestroy {
   messageFC = new FormControl('');
   nicknameFC = new FormControl('');
   messages: ChatMessage[] = [];
-  clients: ChatClient[] = [];
-  private sub: Subscription | undefined;
-  private sub2: Subscription | undefined;
+  clients$: Observable<ChatClient[]> | undefined;
+  unsubscriber$ = new Subject();
   nickname: string | undefined;
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
-    this.sub = this.chatService.listenForMessages()
+    this.chatService.listenForMessages()
+      .pipe(
+        takeUntil(this.unsubscriber$)
+      )
       .subscribe(message => {
         console.log('hello');
         this.messages.push(message);
       });
-    this.sub2 = this.chatService.listenForClients()
-      .subscribe(clients => {
-        this.clients = clients;
+    this.clients$ = this.chatService.listenForClients();
+    this.chatService.getAllMessages()
+      .pipe(
+        take(1)
+      )
+      .subscribe(messages => {
+        console.log('hello');
+        this.messages = messages;
       });
+
+    this.chatService.connect();
   }
 
   sendMessage(): void {
@@ -39,12 +49,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('Destroyed');
-    if (this.sub){
-      this.sub.unsubscribe();
-    }
-    if (this.sub2){
-      this.sub2.unsubscribe();
-    }
+    this.unsubscriber$.next();
+    this.unsubscriber$.complete();
+    this.chatService.disconnect();
   }
 
   sendNickname(): void {
