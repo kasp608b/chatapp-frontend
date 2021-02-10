@@ -3,11 +3,13 @@ import { Socket } from 'ngx-socket-io';
 import { Observable } from 'rxjs';
 import {ChatClient} from './chat-client.model';
 import {ChatMessage} from './chat-message.model';
+import {WelcomeDto} from './welcome.dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
+  chatClient: ChatClient | undefined;
 
   constructor(private socket: Socket) { }
 
@@ -30,8 +32,18 @@ export class ChatService {
       .fromEvent<ChatClient[]>('clients');
   }
 
+  listenForWelcome(): Observable<WelcomeDto>{
+    return this.socket
+      .fromEvent<WelcomeDto>('welcome');
+  }
+
+  listenForErrors(): Observable<string>{
+    return this.socket
+      .fromEvent<string>('error');
+  }
+
   sendNickname(nickname: string): void {
-    this.socket.emit('nickname', nickname);
+      this.socket.emit('nickname', nickname);
   }
 
   disconnect(): void {

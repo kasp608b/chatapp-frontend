@@ -1,6 +1,6 @@
 <h1>Chat</h1>
-<div *ngIf="nickname">
-  <h1>Hi {{nickname}}</h1>
+<div *ngIf="chatClient">
+  <h1>Hi {{chatClient.nickName}}</h1>
   <label>
     Message:
     <input type="text" [formControl]="messageFC">
@@ -8,7 +8,7 @@
 
   <button (click)="sendMessage()">Send Message</button>
 </div>
-<div *ngIf="!nickname">
+<div *ngIf="!chatClient">
   <label>
     Name:
     <input type="text" [formControl]="nicknameFC">
@@ -17,9 +17,13 @@
   <button (click)="sendNickname()">Send Nickname</button>
 </div>
 
+<div *ngIf="errorMessage">
+<p>{{errorMessage}}</p>
+</div>
+
 <h3>Messages</h3>
 <h4 *ngFor="let message of messages">
-  {{message.sender.nickName}} ---- {{message.message}}
+  {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
 </h4>
 
 <div *ngIf="clients$ | async as clients">
@@ -30,3 +34,4 @@
   </li>
 </ul>
 </div>
+

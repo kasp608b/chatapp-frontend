@@ -15,12 +15,24 @@ export class ChatComponent implements OnInit, OnDestroy {
   messageFC = new FormControl('');
   nicknameFC = new FormControl('');
   messages: ChatMessage[] = [];
+  errorMessage: string | undefined;
   clients$: Observable<ChatClient[]> | undefined;
   unsubscriber$ = new Subject();
-  nickname: string | undefined;
+  chatClient: ChatClient | undefined;
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
+    this.clients$ = this.chatService.listenForClients();
+
+    this.chatService.listenForErrors()
+      .pipe(
+        takeUntil(this.unsubscriber$)
+      )
+      .subscribe(error => {
+        console.log('error');
+        this.errorMessage = error;
+      });
+
     this.chatService.listenForMessages()
       .pipe(
         takeUntil(this.unsubscriber$)
@@ -29,17 +41,19 @@ export class ChatComponent implements OnInit, OnDestroy {
         console.log('hello');
         this.messages.push(message);
       });
-    this.clients$ = this.chatService.listenForClients();
-    this.chatService.getAllMessages()
-      .pipe(
-        take(1)
-      )
-      .subscribe(messages => {
-        console.log('hello');
-        this.messages = messages;
+
+    this.chatService.listenForWelcome().pipe(
+      takeUntil(this.unsubscriber$)
+    )
+      .subscribe(welcome => {
+        this.messages = welcome.messages;
+        this.chatClient = this.chatService.chatClient = welcome.client;
+        this.errorMessage = undefined;
       });
 
-    this.chatService.connect();
+    if (this.chatService.chatClient){
+      this.chatService.sendNickname(this.chatService.chatClient.nickName);
+    }
   }
 
   sendMessage(): void {
@@ -51,14 +65,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log('Destroyed');
     this.unsubscriber$.next();
     this.unsubscriber$.complete();
-    this.chatService.disconnect();
   }
 
   sendNickname(): void {
-    // Remember to validate name
-    this.nickname = this.nicknameFC.value;
-    if (this.nickname){
-      this.chatService.sendNickname(this.nickname);
+    if (this.nicknameFC.value){
+      this.chatService.sendNickname(this.nicknameFC.value);
     }
   }
 }
