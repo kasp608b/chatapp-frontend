@@ -7,6 +7,15 @@
   </label>
 
   <button (click)="sendMessage()">Send Message</button>
+  <h5
+    *ngIf="clientsTyping.length > 0"
+    style="color: cornflowerblue">
+    Clients Typing:
+    <span *ngFor="let client of clientsTyping; let i = index">
+      {{client.nickName}}
+      <span *ngIf="clientsTyping.length - 1 > i">,</span>
+    </span>
+  </h5>
 </div>
 <div *ngIf="!chatClient">
   <label>
