@@ -1,4 +1,3 @@
-<h1>Chat</h1>
 <div *ngIf="chatClient">
   <h1>Hi {{chatClient.nickName}}</h1>
   <label>
@@ -16,31 +15,38 @@
       <span *ngIf="clientsTyping.length - 1 > i">,</span>
     </span>
   </h5>
-</div>
-<div *ngIf="!chatClient">
-  <label>
-    Name:
-    <input type="text" [formControl]="nicknameFC">
-  </label>
+  <h3>Messages</h3>
+  <h4 *ngFor="let message of messages">
+    {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
+  </h4>
 
-  <button (click)="sendNickname()">Send Nickname</button>
+  <div *ngIf="clients$ | async as clients">
+    <h3>Users</h3>
+    <ul>
+      <li *ngFor="let client of clients">
+        {{client.nickName}}
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="row align-items-center justify-content-center vh-100" *ngIf="!chatClient">
+  <div class="card">
+    <div class="card-body ">
+      <label>
+        Name:
+        <input type="text" [formControl]="nicknameFC">
+      </label>
+      <div class="row justify-content-end">
+        <button (click)="sendNickname()" class="btn btn-success">Send Nickname</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div *ngIf="errorMessage">
 <p>{{errorMessage}}</p>
 </div>
 
-<h3>Messages</h3>
-<h4 *ngFor="let message of messages">
-  {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
-</h4>
-
-<div *ngIf="clients$ | async as clients">
-  <h3>Users</h3>
-<ul>
-  <li *ngFor="let client of clients">
-    {{client.nickName}}
-  </li>
-</ul>
-</div>
 
