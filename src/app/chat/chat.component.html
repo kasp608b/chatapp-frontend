@@ -43,7 +43,7 @@
           <input type="text" [formControl]="messageFC">
         </label>
 
-        <button class="btn btn-primary" (click)="sendMessage()">Send Message</button>
+        <button class="btn btn-primary btn-sm" style="margin-left: 2px; margin-bottom: 1mm" (click)="sendMessage()">Send Message</button>
       </div>
 
 
@@ -57,7 +57,7 @@
         Name:
         <input type="text" [formControl]="nicknameFC">
       </label>
-      <div class="row justify-content-end">
+      <div class="row justify-content-end" style="margin-right: 0mm">
         <button (click)="sendNickname()" class="btn btn-primary">Send Nickname</button>
       </div>
     </div>
