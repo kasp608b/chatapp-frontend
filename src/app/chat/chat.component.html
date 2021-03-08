@@ -1,55 +1,36 @@
-<div class="row vh-100" *ngIf="chatClient" style="padding-top: 30px">
-  <div class="col-md-3 col-sm-4">
-    <div class="card h-100">
-      <div class="card-header">
-        <span>Online users</span>
-      </div>
-      <div class="card-body">
-        <div *ngIf="clients$ | async as clients">
-          <h3>Users</h3>
-            <ul>
-              <li *ngFor="let client of clients">
-               {{client.nickName}}
-              </li>
-            </ul>
-        </div>
-      </div>
-    </div>
+<div *ngIf="chatClient">
+  <h1>Hi {{chatClient.nickName}}</h1>
+  <label>
+    Message:
+    <input type="text" [formControl]="messageFC">
+  </label>
+
+  <button (click)="sendMessage()">Send Message</button>
+  <h5
+    *ngIf="clientsTyping.length > 0"
+    style="color: cornflowerblue">
+    Clients Typing:
+    <span *ngFor="let client of clientsTyping; let i = index">
+      {{client.nickName}}
+      <span *ngIf="clientsTyping.length - 1 > i">,</span>
+    </span>
+  </h5>
+  <h3>Messages</h3>
+  <h4 *ngFor="let message of messages">
+    {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
+  </h4>
+
+  <div *ngIf="clients$ | async as clients">
+    <h3>Users</h3>
+    <ul>
+      <li *ngFor="let client of clients">
+        {{client.nickName}}
+      </li>
+    </ul>
   </div>
-  <div class="col-md-9 col-sm-8">
-    <div class="card h-100">
-      <div class="card-header">
-        <h5>Hello {{chatClient.nickName}}</h5>
-      </div>
-      <div class="card-body d-flex flex-column">
-        <p *ngFor="let message of messages">
-        {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
-        </p>
-        <div class="mt-auto">
-        <h5
-        *ngIf="clientsTyping.length > 0"
-        style="color: cornflowerblue">
-        Clients Typing:
-        <span *ngFor="let client of clientsTyping; let i = index">
-            {{client.nickName}}
-          <span *ngIf="clientsTyping.length - 1 > i">,</span>
-          </span>
-        </h5>
-          </div>
-      </div>
-      <div class="card-footer">
-        <label>
-          Message:
-          <input type="text" [formControl]="messageFC">
-        </label>
 
-        <button class="btn btn-primary" (click)="sendMessage()">Send Message</button>
-      </div>
-
-
-    </div>
-  </div>
 </div>
+
 <div class="row align-items-center justify-content-center vh-100" *ngIf="!chatClient">
   <div class="card">
     <div class="card-body ">
@@ -58,7 +39,7 @@
         <input type="text" [formControl]="nicknameFC">
       </label>
       <div class="row justify-content-end">
-        <button (click)="sendNickname()" class="btn btn-primary">Send Nickname</button>
+        <button (click)="sendNickname()" class="btn btn-success">Send Nickname</button>
       </div>
     </div>
   </div>
