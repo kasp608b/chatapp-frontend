@@ -25,7 +25,8 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
-              "src/styles.css"
+              "src/_variables.scss",
+              "src/styles.scss"
             ],
             "scripts": []
           },

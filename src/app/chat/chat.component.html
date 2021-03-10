@@ -1,68 +1,69 @@
-<div *ngIf="chatClient" style="padding-top: 30px">
-  <div>
-    <div>
-      <div>
-        <span>Online users</span>
-      </div>
-      <div>
+<div fxLayout="row" fxFlex *ngIf="chatClient" fxLayoutGap="10px" style="padding: 20px">
+  <div fxLayout="column" fxFlex="20" >
+    <mat-card fxFlex class="warn-background-color">
+      <mat-card-header>
+        <h5>Clients</h5>
+      </mat-card-header>
+      <mat-card-content>
         <div *ngIf="clients$ | async as clients">
-          <h3>Users</h3>
           <ul>
             <li *ngFor="let client of clients">
               {{client.nickName}}
             </li>
           </ul>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
-  <div>
-    <div>
-      <div>
+  <div fxLayout="column" fxFlex="80">
+    <mat-card fxLayout="column" fxFlex class="warn-background-color">
+      <mat-card-header>
         <h5>Hello {{chatClient.nickName}}</h5>
-      </div>
-      <div>
+      </mat-card-header>
+      <mat-card-content fxFlex>
         <p *ngFor="let message of messages">
           {{message.sender.nickName}} ---- {{message.message}} ---- {{message.timeStamp | date:'hh:mm:ss'}}
         </p>
-        <div>
-          <h5
-            *ngIf="clientsTyping.length > 0"
-            style="color: cornflowerblue">
-            Clients Typing:
-            <span *ngFor="let client of clientsTyping; let i = index">
-            {{client.nickName}}
-              <span *ngIf="clientsTyping.length - 1 > i">,</span>
-          </span>
-          </h5>
-        </div>
-      </div>
-      <div>
-
+      </mat-card-content>
+      <mat-card-actions>
         <label>
           Message:
           <input type="text" [formControl]="messageFC">
         </label>
-
-        <button style="margin-left: 2px; margin-bottom: 1mm" (click)="sendMessage()">Send Message</button>
-      </div>
-
-
-    </div>
+        <button (click)="sendMessage()">Send Message</button>
+      </mat-card-actions>
+      <mat-card-footer fxFlex="30px" style="padding-left: 30px">
+        <span
+          *ngIf="clientsTyping.length > 0"
+          class="primary-text-color"
+          style="font-size: 10px">
+          Clients Typing:
+          <span *ngFor="let client of clientsTyping; let i = index">
+            {{client.nickName}}
+            <span *ngIf="clientsTyping.length - 1 > i">,</span>
+            </span>
+        </span>
+      </mat-card-footer>
+    </mat-card>
   </div>
 </div>
-<div *ngIf="!chatClient">
-  <div>
-    <div>
-      <label>
-        Name:
-        <input type="text" [formControl]="nicknameFC">
-      </label>
-      <div style="margin-right: 0mm">
-        <button (click)="sendNickname()" mat-raised-button color="primary">Send Nickname</button>
-      </div>
-    </div>
-  </div>
+
+<div fxLayout="row" fxFlex fxLayoutAlign="center center" *ngIf="!chatClient">
+  <mat-card fxFlex="30" class="warn-background-color">
+    <mat-card-header fxLayoutAlign="center top">
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>Welcome to Chatsies</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field class="example-form-field" fxFlex>
+        <mat-label>Enter Nickname</mat-label>
+        <input matInput type="text" [formControl]="nicknameFC">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="sendNickname()">
+          <mat-icon fontSet="material-icons-outlined">send</mat-icon>
+        </button>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
 </div>
 
 <div *ngIf="errorMessage">
