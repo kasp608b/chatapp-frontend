@@ -70,7 +70,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe((chatClient) => {
         if (chatClient.typing && !this.clientsTyping.find((c) => c.id === chatClient.id)){
          this.clientsTyping.push(chatClient);
-        } else {
+        } else if (!chatClient.typing && this.clientsTyping.find((c) => c.id === chatClient.id))
+          {
           this.clientsTyping = this.clientsTyping.filter((c) => c.id !== chatClient.id);
         }
       });
