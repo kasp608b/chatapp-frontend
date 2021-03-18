@@ -1,3 +1,6 @@
+<div *ngIf="!socketId" style="color: darkred">
+  You are not connected!
+</div>
 <div fxLayout="row" fxFlex *ngIf="chatClient" fxLayoutGap="10px" style="padding: 20px">
   <div fxLayout="column" fxFlex="20" >
     <mat-card fxFlex>
@@ -18,7 +21,7 @@
   <div fxLayout="column" fxFlex="80">
     <mat-card fxFlex fxLayout="column">
       <mat-card-header>
-        <h5>Hello {{chatClient.nickName}}</h5>
+        <h5>Hello {{chatClient.nickName}}  {{socketId}}</h5>
       </mat-card-header>
       <mat-card-content fxFlex fxLayout="column">
         <mat-list fxFlex class="make-scrollable">
@@ -75,7 +78,7 @@
 </div>
 
 <div *ngIf="errorMessage">
-  <p>{{errorMessage}}</p>
+  <p style="color: darkred">{{errorMessage}}</p>
 </div>
 
 
