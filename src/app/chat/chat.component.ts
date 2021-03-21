@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ChatService } from './shared/chat.service';
+import { ChatService } from './shared/services/chat.service';
 import {Observable, Subject, Subscription} from 'rxjs';
-import { ChatClient } from './shared/chat-client.model';
-import {ChatMessage} from './shared/chat-message.model';
+import { ChatClient } from './shared/models/chat-client.model';
+import {ChatMessage} from './shared/models/chat-message.model';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 
 @Component({

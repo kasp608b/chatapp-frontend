@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+import { SocketChat } from '../../../app.module';
 import { Observable } from 'rxjs';
-import {ChatClient} from './chat-client.model';
-import {ChatMessage} from './chat-message.model';
-import {WelcomeDto} from './welcome.dto';
+import {ChatClient} from '../models/chat-client.model';
+import {ChatMessage} from '../models/chat-message.model';
+import {WelcomeDto} from '../dtos/welcome.dto';
 import {map} from 'rxjs/operators';
 
 @Injectable({
@@ -12,76 +12,76 @@ import {map} from 'rxjs/operators';
 export class ChatService {
   chatClient: ChatClient | undefined;
 
-  constructor(private socket: Socket) { }
+  constructor(private socketChat: SocketChat) { }
 
   sendMessage(msg: string): void{
-    this.socket.emit('message', msg);
+    this.socketChat.emit('message', msg);
   }
 
   sendTyping(typing: boolean): void {
-    this.socket.emit('typing', typing );
+    this.socketChat.emit('typing', typing );
   }
 
   listenForMessages(): Observable<ChatMessage>{
-    return this.socket
+    return this.socketChat
       .fromEvent<ChatMessage>('newMessage');
   }
 
   getAllMessages(): Observable<ChatMessage[]>{
-    return this.socket
+    return this.socketChat
       .fromEvent<ChatMessage[]>('allMessages');
   }
 
   listenForClients(): Observable<ChatClient[]>{
-    return this.socket
+    return this.socketChat
       .fromEvent<ChatClient[]>('clients');
   }
 
   listenForWelcome(): Observable<WelcomeDto>{
-    return this.socket
+    return this.socketChat
       .fromEvent<WelcomeDto>('welcome');
   }
 
   listenForClientTyping(): Observable<ChatClient>{
-    return this.socket
+    return this.socketChat
       .fromEvent<ChatClient>('clientTyping');
   }
 
   listenForErrors(): Observable<string>{
-    return this.socket
+    return this.socketChat
       .fromEvent<string>('error');
   }
 
   listenForConnect(): Observable<string>{
-    return this.socket
+    return this.socketChat
       .fromEvent<string>('connect')
       .pipe(map( () =>
         {
-          return this.socket.ioSocket.id;
+          return this.socketChat.ioSocket.id;
         })
       );
   }
 
   listenForDisconnect(): Observable<string>{
-    return this.socket
+    return this.socketChat
       .fromEvent<string>('disconnect')
       .pipe(map( () =>
       {
-        return this.socket.ioSocket.id;
+        return this.socketChat.ioSocket.id;
       })
       );
   }
 
   sendNickname(nickname: string): void {
-      this.socket.emit('nickname', nickname);
+      this.socketChat.emit('nickname', nickname);
   }
 
   disconnect(): void {
-    this.socket.disconnect();
+    this.socketChat.disconnect();
   }
 
   connect(): void {
-    this.socket.connect();
+    this.socketChat.connect();
   }
 
 }

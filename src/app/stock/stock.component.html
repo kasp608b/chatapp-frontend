@@ -1,0 +1,48 @@
+
+<div *ngIf="!socketId" style="color: darkred">
+  You are not connected!
+</div>
+<div fxLayout="row" fxFlex fxLayoutGap="10px" style="padding: 20px">
+  <div fxLayout="column" fxFlex="30" >
+    <mat-card fxFlex>
+      <mat-card-header>
+        <h5>Stocks</h5>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="stocks$ | async as stocks">
+          <mat-action-list>
+            <div *ngFor="let stock of stocks">
+              <button mat-list-item (click)="selectStock(stock)">
+                {{stock.id}} ---- {{stock.price}}
+              </button>
+            </div>
+          </mat-action-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div fxLayout="column" fxFlex="70" *ngIf="selectedStock">
+    <mat-card fxFlex fxLayout="column">
+      <mat-card-header>
+        <h1>{{selectedStock.id}}</h1>
+      </mat-card-header>
+      <mat-card-content fxFlex fxLayout="column">
+        <h3>Description: {{selectedStock.desc}}</h3>
+        <div fxLayout="row" >
+          <div fxLayout="column" fxFlex="20">
+            <h4>Stock price: {{selectedStock.price}}</h4>
+          </div>
+          <div fxLayout="column" fxFlex="80" style="padding-right: 500px" >
+            <button mat-button (click)="increaseStockPrice()">+</button>
+            <button mat-button (click)="decreaseStockPrice()">-</button>
+          </div>
+        </div>
+        <h5>Inital stock price: {{selectedStock.init_price}}</h5>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div *ngIf="errorMessage$ | async">
+  <p style="color: darkred">{{errorMessage$ | async}}</p>
+</div>
