@@ -13,8 +13,8 @@ export class StockService {
 
   constructor(private socketStock: SocketStock) { }
 
-  sendUpdateStockPrice(stockID: string, newPrice: number): void {
-    this.socketStock.emit('stockPriceUpdated', stockID, newPrice );
+  sendUpdateStockPrice(stock: Stock): void {
+    this.socketStock.emit('updateStockPrice', stock);
   }
 
   listenForAllStocks(): Observable<Stock[]>{

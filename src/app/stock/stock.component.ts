@@ -37,6 +37,14 @@ export class StockComponent implements OnInit, OnDestroy {
       .subscribe((id) => {
         this.socketId = id;
       });
+
+    this.stockService.listenForStockPriceUpdated()
+      .pipe(
+        takeUntil(this.unsubscriber$)
+      )
+      .subscribe(stock => {
+        this.selectStock(stock);
+      });
   }
 
   ngOnDestroy(): void {
@@ -50,10 +58,16 @@ export class StockComponent implements OnInit, OnDestroy {
   }
 
   increaseStockPrice(): void {
+    this.selectedStock.price++;
+    const stock = this.selectedStock;
+    this.stockService.sendUpdateStockPrice(stock);
 
   }
 
   decreaseStockPrice(): void {
+    this.selectedStock.price--;
+    const stock = this.selectedStock;
+    this.stockService.sendUpdateStockPrice(stock);
 
   }
 }
