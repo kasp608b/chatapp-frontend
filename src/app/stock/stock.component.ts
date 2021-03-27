@@ -60,14 +60,14 @@ export class StockComponent implements OnInit, OnDestroy {
   increaseStockPrice(): void {
     this.selectedStock.price++;
     const stock = this.selectedStock;
-    this.stockService.sendUpdateStockPrice(stock);
+    this.stockService.sendUpdateStock(stock);
 
   }
 
   decreaseStockPrice(): void {
     this.selectedStock.price--;
     const stock = this.selectedStock;
-    this.stockService.sendUpdateStockPrice(stock);
+    this.stockService.sendUpdateStock(stock);
 
   }
 }
