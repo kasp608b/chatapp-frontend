@@ -1,4 +1,4 @@
-export interface Stock {
+export interface StockDTO {
   name: string;
   price: number;
   init_price: number;

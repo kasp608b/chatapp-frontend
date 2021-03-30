@@ -13,7 +13,7 @@
           <mat-action-list>
             <div *ngFor="let stock of stocks">
               <button mat-list-item (click)="selectStock(stock)">
-                {{stock.id}} ---- {{stock.price.toFixed(2)}}
+                {{stock.name}} ---- {{stock.price.toFixed(2)}}
               </button>
             </div>
           </mat-action-list>
@@ -24,7 +24,7 @@
   <div fxLayout="column" fxFlex="70" *ngIf="selectedStock">
     <mat-card fxFlex fxLayout="column">
       <mat-card-header>
-        <h1>{{selectedStock.id}}</h1>
+        <h1>{{selectedStock.name}}</h1>
       </mat-card-header>
       <mat-card-content fxFlex fxLayout="column">
         <h3>Description: {{selectedStock.desc}}</h3>

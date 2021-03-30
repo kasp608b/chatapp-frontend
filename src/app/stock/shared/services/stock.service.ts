@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators';
 import { Stock } from '../models/stock.model';
 import {ChatMessage} from '../../../chat/shared/models/chat-message.model';
 import {ChatClient} from '../../../chat/shared/models/chat-client.model';
+import {StockDTO} from '../dtos/stock.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +15,26 @@ export class StockService {
   constructor(private socketStock: SocketStock) { }
 
   sendUpdateStock(stock: Stock): void {
-    this.socketStock.emit('updateStock', stock);
+    const stockDTO: StockDTO = {
+      name: stock.name,
+      price: stock.price,
+      init_price: stock.init_price,
+      desc: stock.desc,
+    };
+    this.socketStock.emit('updateStock', stockDTO);
   }
 
   listenForAllStocks(): Observable<Stock[]>{
     return this.socketStock
-      .fromEvent<Stock[]>('allStocks');
+      .fromEvent<StockDTO[]>('allStocks')
+      .pipe(map(stocks => JSON.parse(JSON.stringify(stocks))));
   }
+
 
   listenForStockPriceUpdated(): Observable<Stock>{
     return this.socketStock
-      .fromEvent<Stock>('stockPriceUpdated');
+      .fromEvent<StockDTO>('stockPriceUpdated')
+      .pipe(map(stocks => JSON.parse(JSON.stringify(stocks))));
   }
 
   listenForConnect(): Observable<string>{
