@@ -1,5 +1,4 @@
-
-<div *ngIf="!socketId" style="color: darkred">
+<div  *ngIf="!socketId" style="color: darkred">
   You are not connected!
 </div>
 <div fxLayout="row" fxFlex fxLayoutGap="10px" style="padding: 20px">
@@ -7,6 +6,7 @@
     <mat-card fxFlex>
       <mat-card-header>
         <h5>Stocks</h5>
+        <button mat-button (click)="addStock()">Add a new stock</button>
       </mat-card-header>
       <mat-card-content>
         <div *ngIf="stocks$ | async as stocks">
@@ -21,7 +21,7 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div fxLayout="column" fxFlex="70" *ngIf="selectedStock">
+  <div fxLayout="column" fxFlex="70" *ngIf="selectedStock && isUpdating == false && isAdding == false">
     <mat-card fxFlex fxLayout="column">
       <mat-card-header>
         <h1>{{selectedStock.name}}</h1>
@@ -41,8 +41,51 @@
       </mat-card-content>
     </mat-card>
   </div>
+  <div fxLayout="column" fxFlex="70" *ngIf="isAdding || (isUpdating && selectedStock) ">
+    <form fxFlex [formGroup]="newStockFG" (ngSubmit)="save()">
+    <mat-card fxFlex fxLayout="column">
+      <mat-card-header fxFlex>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" formControlName="nameFC" class="form-control" required/>
+          <div *ngIf="nameFC.invalid" class="warn-text-color">
+            <div *ngIf="nameFC.errors.required">name is required</div>
+          </div>
+        </div>
+      </mat-card-header>
+      <mat-card-content fxFlex fxLayout="column">
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" formControlName="descFC" class="form-control" required/>
+          <div *ngIf="descFC.invalid" class="warn-text-color">
+            <div *ngIf="descFC.errors.required">description is required</div>
+          </div>
+        </div>
+        <div fxLayout="row" >
+          <div fxLayout="column" fxFlex="20">
+            <div class="form-group">
+              <label>Stock price</label>
+              <input type="number" formControlName="priceFC" class="form-control" required/>
+              <div *ngIf="priceFC.invalid" class="warn-text-color">
+                <div *ngIf="priceFC.errors.required">price is required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isUpdating && selectedStock">
+        <h5>Inital stock price: {{selectedStock.init_price.toFixed(2)}}</h5>
+        </div>
+      </mat-card-content>
+      <mat-card-actions fxFlex>
+        <div class="form-group">
+          <button mat-button >Save</button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+    </form>
+  </div>
 </div>
 
-<div *ngIf="errorMessage$ | async">
-  <p style="color: darkred">{{errorMessage$ | async}}</p>
+<div *ngIf="errorMessage">
+  <p style="color: darkred">{{errorMessage}}</p>
 </div>

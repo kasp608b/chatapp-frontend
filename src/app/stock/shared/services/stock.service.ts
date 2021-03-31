@@ -24,6 +24,26 @@ export class StockService {
     this.socketStock.emit('updateStock', stockDTO);
   }
 
+  sendAddStock(stock: Stock): void {
+    const stockDTO: StockDTO = {
+      name: stock.name,
+      price: stock.price,
+      init_price: stock.init_price,
+      desc: stock.desc,
+    };
+    this.socketStock.emit('addStock', stockDTO);
+  }
+
+  sendDeleteStock(stock: Stock): void {
+    const stockDTO: StockDTO = {
+      name: stock.name,
+      price: stock.price,
+      init_price: stock.init_price,
+      desc: stock.desc,
+    };
+    this.socketStock.emit('deleteStock', stockDTO);
+  }
+
   listenForAllStocks(): Observable<Stock[]>{
     return this.socketStock
       .fromEvent<StockDTO[]>('allStocks')
