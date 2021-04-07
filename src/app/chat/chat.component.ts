@@ -1,10 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ChatService } from './shared/services/chat.service';
-import {Observable, Subject, Subscription} from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { ChatClient } from './shared/models/chat-client.model';
-import {ChatMessage} from './shared/models/chat-message.model';
-import {debounceTime, take, takeUntil} from 'rxjs/operators';
+import { ChatMessage } from './shared/models/chat-message.model';
+import { debounceTime, take, takeUntil } from 'rxjs/operators';
+import { ChatState } from './shared/state/chat.state';
+import { Select, Store} from '@ngxs/store';
+import {ListenForClients, StopListeningForClients} from './shared/state/chat.actions';
 
 @Component({
   selector: 'app-chat',
@@ -17,13 +20,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   messages: ChatMessage[] = [];
   clientsTyping: ChatClient[] = [];
   errorMessage: string | undefined;
+  @Select(ChatState.clients)
   clients$: Observable<ChatClient[]> | undefined;
   unsubscriber$ = new Subject();
   chatClient: ChatClient | undefined;
   socketId: string | undefined;
-  constructor(private chatService: ChatService) { }
+  constructor(private chatService: ChatService, private store: Store, ) { }
 
   ngOnInit(): void {
+    this.store.dispatch(new ListenForClients());
     this.messageFC.valueChanges
       .pipe(
         takeUntil(this.unsubscriber$),
@@ -31,8 +36,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       ).subscribe((value) => {
         this.chatService.sendTyping(value.length > 0);
     });
-
-    this.clients$ = this.chatService.listenForClients();
 
     this.chatService.listenForErrors()
       .pipe(
@@ -102,6 +105,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log('Destroyed');
     this.unsubscriber$.next();
     this.unsubscriber$.complete();
+    this.store.dispatch(new StopListeningForClients());
   }
 
   sendNickname(): void {
