@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { NgxsModule } from '@ngxs/store';
+import { StockState } from './shared/state/stock.state';
 
 @NgModule({
   declarations: [StockComponent],
@@ -22,7 +24,8 @@ import { MatListModule } from '@angular/material/list';
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    NgxsModule.forFeature([StockState])
   ]
 })
 export class StockModule { }

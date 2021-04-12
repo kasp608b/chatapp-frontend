@@ -4,6 +4,9 @@ import {Observable, Subject, Subscription} from 'rxjs';
 import { Stock } from './shared/models/stock.model';
 import {debounceTime, take, takeUntil} from 'rxjs/operators';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
+import { StockState } from './shared/state/stock.state';
+import { Select, Store } from '@ngxs/store';
+import {ListenForStocks, StopListeningForStocks} from './shared/state/stock.actions';
 
 @Component({
   selector: 'app-stock',
@@ -11,6 +14,7 @@ import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/form
   styleUrls: ['./stock.component.css']
 })
 export class StockComponent implements OnInit, OnDestroy {
+  @Select(StockState.stocks)
   stocks$: Observable<Stock[]> | undefined;
   selectedStock: Stock | undefined;
   unsubscriber$ = new Subject();
@@ -24,7 +28,7 @@ export class StockComponent implements OnInit, OnDestroy {
     descFC: new FormControl('', Validators.required),
   });
 
-  constructor(private stockService: StockService) { }
+  constructor(private stockService: StockService, private store: Store, ) { }
 
   get nameFC(): AbstractControl { return this.newStockFG.get('nameFC'); }
   get priceFC(): AbstractControl { return this.newStockFG.get('priceFC'); }
@@ -33,7 +37,7 @@ export class StockComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isUpdating = false;
     this.isAdding = false;
-    this.stocks$ = this.stockService.listenForAllStocks();
+    this.store.dispatch(new ListenForStocks());
     this.stockService.listenForErrors()
       .pipe(
         takeUntil(this.unsubscriber$)
@@ -41,7 +45,7 @@ export class StockComponent implements OnInit, OnDestroy {
        this.errorMessage = error;
     });
 
-    this.stockService.listenForConnect()
+   /* this.stockService.listenForConnect()
       .pipe(
         takeUntil(this.unsubscriber$)
       )
@@ -55,7 +59,7 @@ export class StockComponent implements OnInit, OnDestroy {
       )
       .subscribe((id) => {
         this.socketId = id;
-      });
+      });*/
 
     this.stockService.listenForStockPriceUpdated()
       .pipe(
@@ -70,6 +74,7 @@ export class StockComponent implements OnInit, OnDestroy {
     console.log('Destroyed');
     this.unsubscriber$.next();
     this.unsubscriber$.complete();
+    this.store.dispatch(new StopListeningForStocks());
   }
 
   selectStock(selectedStock: Stock): void {
@@ -80,16 +85,24 @@ export class StockComponent implements OnInit, OnDestroy {
   }
 
   increaseStockPrice(): void {
-    this.selectedStock.price++;
-    const stock = this.selectedStock;
-    this.stockService.sendUpdateStock(stock);
+    const updatedStock =
+      {name: this.selectedStock.name,
+        price: this.selectedStock.price,
+        init_price: this.selectedStock.init_price,
+        desc: this.selectedStock.desc};
+    updatedStock.price++;
+    this.stockService.sendUpdateStock(updatedStock);
 
   }
 
   decreaseStockPrice(): void {
-    this.selectedStock.price--;
-    const stock = this.selectedStock;
-    this.stockService.sendUpdateStock(stock);
+    const updatedStock =
+      {name: this.selectedStock.name,
+        price: this.selectedStock.price,
+        init_price: this.selectedStock.init_price,
+        desc: this.selectedStock.desc};
+    updatedStock.price--;
+    this.stockService.sendUpdateStock(updatedStock);
 
   }
 

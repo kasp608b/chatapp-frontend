@@ -9,6 +9,7 @@ import { SharedModule } from './shared/shared.module';
 import { environment} from '../environments/environment';
 import { NgxsModule} from '@ngxs/store';
 import {NgxsLoggerPlugin, NgxsLoggerPluginModule} from '@ngxs/logger-plugin';
+import {NgxsStoragePluginModule} from '@ngxs/storage-plugin';
 
 @Injectable()
 export class SocketChat extends Socket {
@@ -41,6 +42,7 @@ export class SocketStock extends Socket {
     NgxsModule.forRoot([], {
       developmentMode: !environment.production
     }),
+    NgxsStoragePluginModule.forRoot(),
     NgxsLoggerPluginModule.forRoot(),
   ],
   providers: [SocketChat, SocketStock],
