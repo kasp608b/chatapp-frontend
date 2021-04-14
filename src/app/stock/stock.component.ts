@@ -2,11 +2,18 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StockService } from './shared/services/stock.service';
 import {Observable, Subject, Subscription} from 'rxjs';
 import { Stock } from './shared/models/stock.model';
-import {debounceTime, take, takeUntil} from 'rxjs/operators';
+import {debounceTime, take, takeUntil, withLatestFrom} from 'rxjs/operators';
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import { StockState } from './shared/state/stock.state';
 import { Select, Store } from '@ngxs/store';
-import {ListenForStocks, StopListeningForStocks} from './shared/state/stock.actions';
+import {
+  AddStock,
+  ListenForErrors,
+  ListenForStockPriceUpdated,
+  ListenForStocks,
+  SendUpdateStock,
+  StopListeningForStocks
+} from './shared/state/stock.actions';
 
 @Component({
   selector: 'app-stock',
@@ -16,8 +23,12 @@ import {ListenForStocks, StopListeningForStocks} from './shared/state/stock.acti
 export class StockComponent implements OnInit, OnDestroy {
   @Select(StockState.stocks)
   stocks$: Observable<Stock[]> | undefined;
+  @Select(StockState.updatedStock)
+  updatedStock$: Observable<Stock>;
   selectedStock: Stock | undefined;
   unsubscriber$ = new Subject();
+  @Select(StockState.error)
+  errorMessage$: Observable<string>;
   errorMessage: string | undefined;
   socketId: string | undefined;
   isUpdating: boolean;
@@ -28,7 +39,7 @@ export class StockComponent implements OnInit, OnDestroy {
     descFC: new FormControl('', Validators.required),
   });
 
-  constructor(private stockService: StockService, private store: Store, ) { }
+  constructor( private store: Store ) { }
 
   get nameFC(): AbstractControl { return this.newStockFG.get('nameFC'); }
   get priceFC(): AbstractControl { return this.newStockFG.get('priceFC'); }
@@ -38,12 +49,18 @@ export class StockComponent implements OnInit, OnDestroy {
     this.isUpdating = false;
     this.isAdding = false;
     this.store.dispatch(new ListenForStocks());
-    this.stockService.listenForErrors()
+    this.store.dispatch(new ListenForErrors());
+    this.errorMessage$
+      .pipe(takeUntil(this.unsubscriber$))
+      .subscribe(error => {
+        this.errorMessage = error;
+      });
+    /*this.stockService.listenForErrors()
       .pipe(
         takeUntil(this.unsubscriber$)
       ).subscribe((error) => {
        this.errorMessage = error;
-    });
+    });*/
 
    /* this.stockService.listenForConnect()
       .pipe(
@@ -61,12 +78,21 @@ export class StockComponent implements OnInit, OnDestroy {
         this.socketId = id;
       });*/
 
-    this.stockService.listenForStockPriceUpdated()
+    /*this.stockService.listenForStockPriceUpdated()
       .pipe(
         takeUntil(this.unsubscriber$)
       )
       .subscribe(stock => {
         this.selectStock(stock);
+      });*/
+
+    this.store.dispatch(new ListenForStockPriceUpdated());
+    this.updatedStock$
+      .pipe(
+        takeUntil(this.unsubscriber$)
+      )
+      .subscribe(stock => {
+        this.selectedStock = stock;
       });
   }
 
@@ -91,7 +117,7 @@ export class StockComponent implements OnInit, OnDestroy {
         init_price: this.selectedStock.init_price,
         desc: this.selectedStock.desc};
     updatedStock.price++;
-    this.stockService.sendUpdateStock(updatedStock);
+    this.store.dispatch(new SendUpdateStock(updatedStock));
 
   }
 
@@ -102,7 +128,7 @@ export class StockComponent implements OnInit, OnDestroy {
         init_price: this.selectedStock.init_price,
         desc: this.selectedStock.desc};
     updatedStock.price--;
-    this.stockService.sendUpdateStock(updatedStock);
+    this.store.dispatch(new SendUpdateStock(updatedStock));
 
   }
 
@@ -121,7 +147,7 @@ export class StockComponent implements OnInit, OnDestroy {
           init_price: this.priceFC.value,
           desc: this.descFC.value
         };
-      this.stockService.sendAddStock(newStock);
+      this.store.dispatch(new AddStock(newStock));
       this.errorMessage = undefined;
     } else {
       this.errorMessage = 'Invalid input, try again';
